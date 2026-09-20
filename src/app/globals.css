@@ -118,4 +118,50 @@ button,input,textarea,select { font:inherit; } button { cursor:pointer; }
 .mic-button { align-self:flex-end; display:grid; place-items:center; width:38px; height:38px; color:var(--cyan); border:1px solid rgba(87,215,255,0.34); border-radius:12px; background:linear-gradient(180deg,rgba(16,24,32,0.9),rgba(12,17,22,0.96)); box-shadow:0 12px 22px rgba(0,0,0,0.18),inset 0 0 0 1px rgba(255,255,255,0.02); transition:color .2s,border-color .2s,background .2s; }.mic-button:hover:not(:disabled) { border-color:rgba(87,215,255,0.72); background:linear-gradient(180deg,rgba(20,31,39,0.96),rgba(12,17,22,0.96)); }.mic-button.recording { color:#06110d; border-color:rgba(255,125,136,0.7); background:linear-gradient(135deg,#ff7d88,#ff9eaf); box-shadow:0 0 18px rgba(255,125,136,0.26); animation:recording-pulse 1.15s ease-in-out infinite; }.mic-button:disabled { cursor:not-allowed; opacity:.35; }
 .tool-chip small { color:var(--cyan); font-size:9px; }.model-button small { color:var(--cyan); font-size:9px; }.tool-menu-option em,.network-option em { margin-left:4px; color:var(--cyan); font-size:9px; font-style:normal; font-weight:700; }
 @media (max-width:900px) { .workspace { width:90vw; grid-template-columns:1fr; gap:32px; padding:34px 0 50px; }.inspector-panel { min-height:380px; } }
-@media (max-width:560px) { .topbar { height:auto; min-height:68px; padding:14px 5vw; align-items:flex-start; }.brand-caption,.wallet-pill { display:none; }.topbar-status { margin-top:7px; }.workspace { width:90vw; padding:26px 0 34px; }.composer-footer { gap:10px; flex-direction:column; }.inspector-panel { min-height:400px; }.network-drawer { padding:22px 18px; }.drawer-header h2 { font-size:22px; }.references-popover { width:min(360px,calc(100vw - 40px)); } }
+@media (max-width:560px) { 
+	body { overflow-x:hidden; }
+	.topbar { position:sticky; height:auto; min-height:68px; padding:12px 4vw; align-items:center; }
+	.brand-lockup, .topbar-status { position:static; }
+	.brand-caption, .wallet-pill { display:none; }
+	.topbar-status { gap:8px; margin-top:0; }
+	.balance-pill { padding:8px 10px; font-size:9px; }
+	.create-chat-button, .wallet-pill { width:34px; height:34px; }
+	.workspace { width:min(92vw,100%); padding:18px 0 28px; }
+	.console-panel { min-height:auto; }
+	.hero-header { min-height:126px; padding:18px 12px 14px; }
+	.hero-header h1 { gap:8px; font-size:clamp(32px, 16vw, 54px); letter-spacing:-0.08em; }
+	.fluere-banner-mark { width:clamp(32px, 11vw, 48px); height:clamp(32px, 11vw, 48px); }
+	.message-list { gap:16px; padding:10px 0 18px; }
+	.message-row { max-width:100%; }
+	.message-bubble { padding:14px 15px; border-radius:12px 12px 12px 4px; font-size:13px; }
+	.message-bubble h2 { font-size:18px; }
+	.message-bubble h3 { font-size:16px; }
+	.message-bubble h4 { font-size:14px; }
+	.composer-wrap { margin-top:10px; }
+	.composer { flex-direction:column; align-items:stretch; gap:8px; padding:10px; border-radius:14px; }
+	.composer-input { width:100%; }
+	.composer textarea { min-height:46px; font-size:14px; }
+	.composer-actions { width:100%; align-items:stretch; }
+	.composer-toolbar-row { width:100%; justify-content:space-between; gap:8px; }
+	.composer-toolbar-row-right { justify-content:space-between; }
+	.plus-button, .model-button, .call-button, .mic-button, .smart-toggle, .prompt-cost, .execute-button { height:40px; }
+	.model-button { flex:1 1 auto; min-width:0; max-width:none; }
+	.prompt-cost { min-width:0; padding:0 10px; }
+	.smart-toggle { padding:0 9px; }
+	.activity-tab { right:16px; bottom:16px; }
+	.history-popover, .account-popover { right:12px; left:12px; width:auto; }
+	.history-popover { left:12px; }
+	.account-qr img { width:130px; height:130px; }
+	.activity-backdrop, .auth-backdrop, .receipt-preview-backdrop { padding:16px; }
+	.activity-modal, .receipt-preview-card { width:min(100%, 420px); }
+	.call-card { min-height:420px; padding:28px 18px 26px; border-radius:22px; }
+	.call-orb { width:94px; height:94px; }
+	.call-controls { gap:10px; }
+	.call-main-button, .call-hangup-button, .call-interrupt-button { min-height:42px; padding:0 16px; }
+	.call-status { font-size:12px; }
+	.composer-footer { gap:10px; flex-direction:column; }
+	.inspector-panel { min-height:400px; }
+	.network-drawer { padding:22px 18px; }
+	.drawer-header h2 { font-size:22px; }
+	.references-popover { width:min(360px,calc(100vw - 40px)); }
+}
