@@ -118,10 +118,17 @@ export async function getPayClient() {
   return client;
 }
 
+function isVerificationFailure(data: unknown) {
+  if (!data || typeof data !== "object" || !("error" in data)) return false;
+  const error = (data as { error?: unknown }).error;
+  return typeof error === "string" && error.toLowerCase().includes("verification_failed");
+}
+
 export async function callPaidEndpoint(
   url: string,
   method: "GET" | "POST" = "GET",
-  body?: unknown
+  body?: unknown,
+  retryVerification = true,
 ) {
   const pay = await getPayClient();
 
@@ -151,9 +158,14 @@ export async function callPaidEndpoint(
     }
 
     const response = await fetch(url, { ...options, headers });
+    const data = await readResponseData(response);
+    if (retryVerification && isVerificationFailure(data)) {
+      client = null;
+      return callPaidEndpoint(url, method, body, false);
+    }
     return {
       status: response.status,
-      data: await readResponseData(response),
+      data,
       headers: {
         paymentResponse: response.headers.get("payment-response"),
         xPaymentResponse: response.headers.get("x-payment-response"),
@@ -181,6 +193,7 @@ export async function callPaidBinaryEndpoint(
   method: "GET" | "POST" = "POST",
   body?: Uint8Array | string,
   contentType = "application/octet-stream",
+  retryVerification = true,
 ) {
   const pay = await getPayClient();
   const options: RequestInit = {
@@ -202,9 +215,14 @@ export async function callPaidBinaryEndpoint(
   const headers = new Headers(options.headers);
   for (const [name, value] of Object.entries(pay.encodePaymentSignatureHeader(paymentPayload))) headers.set(name, value);
   const response = await fetch(url, { ...options, headers });
+  const data = response.headers.get("content-type")?.includes("audio") ? await readResponseBase64(response) : await readResponseData(response);
+  if (retryVerification && isVerificationFailure(data)) {
+    client = null;
+    return callPaidBinaryEndpoint(url, method, body, contentType, false);
+  }
   return {
     status: response.status,
-    data: response.headers.get("content-type")?.includes("audio") ? await readResponseBase64(response) : await readResponseData(response),
+    data,
     headers: getHeaders(response),
   };
 }

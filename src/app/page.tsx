@@ -768,6 +768,13 @@ export default function Fluere() {
         setCallTranscript(result.transcript);
         appendMessages({ id: crypto.randomUUID(), role: "user", content: result.transcript });
       }
+      if (!response.ok || result.error) {
+        const callError = typeof result.error === "string" ? result.error : `Voice request failed (${response.status})`;
+        appendLogs(`[CALL ERROR] ${callError}`);
+        appendMessages({ id: crypto.randomUUID(), role: "assistant", content: `Voice request failed: ${callError}` });
+        setCallBusy(false);
+        return;
+      }
       if (result.reply) appendMessages({ id: crypto.randomUUID(), role: "assistant", content: result.reply });
       const audioSource = getAudioSource(result.audio);
       const speakReply = () => {
