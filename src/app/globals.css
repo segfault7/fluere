@@ -145,7 +145,8 @@ button,input,textarea,select { font:inherit; } button { cursor:pointer; }
 	.composer-toolbar-row { width:100%; justify-content:stretch; gap:7px; }
 	.composer-toolbar-row-right { justify-content:stretch; }
 	.plus-button, .model-button, .call-button, .mic-button, .smart-toggle, .prompt-cost, .execute-button { height:38px; }
-	.plus-button, .call-button, .mic-button, .execute-button { width:38px; flex:0 0 38px; }
+	.plus-button, .mic-button, .execute-button { width:38px; flex:0 0 38px; }
+	.call-button { display:none; }
 	.model-button { flex:1 1 auto; min-width:0; max-width:none; justify-content:flex-start; }
 	.prompt-cost { min-width:0; flex:1 1 auto; justify-content:center; padding:0 9px; }
 	.smart-toggle { flex:0 0 38px; justify-content:center; padding:0; }
