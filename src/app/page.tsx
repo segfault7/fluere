@@ -270,6 +270,11 @@ function getSolscanTxUrl(transaction: string, network?: string) {
   return `https://solscan.io/tx/${transaction}${suffix}`;
 }
 
+function getAudioSource(value: unknown) {
+  if (typeof value !== "string" || !value) return null;
+  return value.startsWith("data:") ? value : `data:audio/mpeg;base64,${value}`;
+}
+
 function parseWalletCommand(input: string) {
   const trimmed = input.trim();
   if (!trimmed) return null;
@@ -764,18 +769,30 @@ export default function Fluere() {
         appendMessages({ id: crypto.randomUUID(), role: "user", content: result.transcript });
       }
       if (result.reply) appendMessages({ id: crypto.randomUUID(), role: "assistant", content: result.reply });
-      if (result.audio) {
-        const audio = new Audio(`data:audio/mpeg;base64,${result.audio}`);
-        callAudioRef.current = audio;
-        setCallSpeaking(true);
-        audio.onended = () => { callAudioRef.current = null; setCallSpeaking(false); if (callModeRef.current) void toggleCallRecording(); };
-        await audio.play().catch(() => undefined);
-      } else if (result.reply && "speechSynthesis" in window) {
+      const audioSource = getAudioSource(result.audio);
+      const speakReply = () => {
+        if (!result.reply || !("speechSynthesis" in window)) return false;
         const utterance = new SpeechSynthesisUtterance(result.reply);
         utterance.onstart = () => setCallSpeaking(true);
         utterance.onend = () => { setCallSpeaking(false); if (callModeRef.current) void toggleCallRecording(); };
+        utterance.onerror = () => { setCallSpeaking(false); setCallBusy(false); };
         speechSynthesis.speak(utterance);
-      } else if (result.reply) {
+        return true;
+      };
+      if (audioSource) {
+        const audio = new Audio(audioSource);
+        audio.preload = "auto";
+        callAudioRef.current = audio;
+        audio.onended = () => { callAudioRef.current = null; setCallSpeaking(false); if (callModeRef.current) void toggleCallRecording(); };
+        try {
+          await audio.play();
+          setCallSpeaking(true);
+        } catch (error) {
+          callAudioRef.current = null;
+          appendLogs(`[CALL TTS FALLBACK] Audio playback was blocked; using browser speech`);
+          if (!speakReply()) appendMessages({ id: crypto.randomUUID(), role: "assistant", content: `Voice playback failed: ${error instanceof Error ? error.message : "audio playback is unavailable"}` });
+        }
+      } else if (!speakReply() && result.reply) {
         appendMessages({ id: crypto.randomUUID(), role: "assistant", content: "TTS is unavailable in this browser, but the response is ready to read." });
       }
       setCallBusy(false);
